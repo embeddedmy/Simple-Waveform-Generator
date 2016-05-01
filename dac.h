@@ -10,4 +10,6 @@
  
  #include "stm32f0xx.h"
  
+ int dac_init(int chn);
+ 
  #endif	/* DAC_H */
