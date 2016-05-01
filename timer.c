@@ -83,6 +83,32 @@ int timer_disable_interrupt(TIM_TypeDef *tim)
 	return 0;
 }
 
+/** @brief Disables timer counting
+ *	@param tim Timer to be configured. Its value can be TIM6 or TIM7.
+ *	@returns 0 if successful and -1 if otherwise.
+ */
+int TIMER_disable(TIM_TypeDef *tim)
+{
+	if ((tim != TIM6) && (tim != TIM7))
+		return -1;
+
+	tim->CR1 &= ~(TIM_CR1_CEN);
+	return 0;
+}
+
+/** @brief Enables timer counting
+ *	@param tim Timer to be configured. Its value can be TIM6 or TIM7.
+ *	@returns 0 if successful and -1 if otherwise.
+ */
+int TIMER_enable(TIM_TypeDef *tim)
+{
+	if ((tim != TIM6) && (tim != TIM7))
+		return -1;
+
+	tim->CR1 |= TIM_CR1_CEN;
+	return 0;
+}
+
 /** @brief Initializes a basic Timer
  *	@param tim The timer to be initialized. Its value can be TIM6 or TIM7
  *
