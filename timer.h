@@ -10,4 +10,6 @@
 
 #include "stm32f0xx.h"
 
+int timer_init(TIM_TypeDef *tim);
+
 #endif	/* TIMER_H */

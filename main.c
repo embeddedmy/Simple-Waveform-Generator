@@ -6,6 +6,7 @@
  */
 
 #include "stm32f0xx.h"
+#include "timer.h"
 
 /** @brief Configures the SystemCoreClock using HSI.
  *	@note HSE is not populated on Nucleo board.
