@@ -13,6 +13,40 @@
 #include <stdbool.h>
 #include "timer.h"
 
+/** @brief Writes to the counter register
+ *	@param tim The timer to configure.
+ *	@param val The value of the counter.
+ *	@returns 0 if successful and -1 if otherwise.
+ *
+ *	This function writes to the counter register which is the ARR register.
+ *
+ *	@note It is best to disable the timer before updating the counter.
+ */
+int timer_write_counter(TIM_TypeDef *tim, uint16_t val)
+{
+	if ((tim != TIM6) && (tim != TIM7))
+		return -1;
+
+	tim->ARR = val;
+	return 0;
+}
+
+/** @brief Writes to the prescaler register
+ *	@param tim The timer to configure.
+ *	@param val The value of the prescaler.
+ *	@returns 0 if successful and -1 if otherwise.
+ *
+ *	@note It is best to disable the timer before updating the prescaler.
+ */
+int timer_write_prescaler(TIM_TypeDef *tim, uint16_t val)
+{
+	if ((tim != TIM6) && (tim != TIM7))
+		return -1;
+
+	tim->PSC = val;
+	return 0;
+}
+
 /** @brief Initializes a basic Timer
  *	@param tim The timer to be initialized. Its value can be TIM6 or TIM7
  *

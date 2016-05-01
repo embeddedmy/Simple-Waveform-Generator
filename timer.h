@@ -10,6 +10,8 @@
 
 #include "stm32f0xx.h"
 
+int timer_write_counter(TIM_TypeDef *tim, uint16_t val);
+int timer_write_prescaler(TIM_TypeDef *tim, uint16_t val);
 int timer_init(TIM_TypeDef *tim);
 
 #endif	/* TIMER_H */
