@@ -13,11 +13,14 @@
 #include <stdio.h>
 #include "timer.h"
 
+/** @name Callback function handlers */
+/** @{*/
 void (*timer6_callback)(void) = NULL;
 void (*timer7_callback)(void) = NULL;
+/** @}*/
 
 /** @brief Writes to the counter register
- *	@param tim The timer to configure.
+ *	@param tim The timer to configure. Its value can be TIM6 or TIM7.
  *	@param val The value of the counter.
  *	@returns 0 if successful and -1 if otherwise.
  *
@@ -35,7 +38,7 @@ int timer_write_counter(TIM_TypeDef *tim, uint16_t val)
 }
 
 /** @brief Writes to the prescaler register
- *	@param tim The timer to configure.
+ *	@param tim The timer to configure. Its value can be TIM6 or TIM7.
  *	@param val The value of the prescaler.
  *	@returns 0 if successful and -1 if otherwise.
  *
@@ -51,7 +54,7 @@ int timer_write_prescaler(TIM_TypeDef *tim, uint16_t val)
 }
 
 /** @brief Enables Timer interrupt
- *	@tim The timer to configure.
+ *	@tim The timer to configure. Its value can be TIM6 or TIM7.
  *	@returns 0 if successful and -1 if otherwise.
  *
  *	@note The timer needs to be configured to enable interrupt in timer_init in
@@ -69,7 +72,7 @@ int timer_enable_interrupt(TIM_TypeDef *tim)
 }
 
 /** @brief Disables Timer interrupt
- *	@tim The timer to configure.
+ *	@tim The timer to configure. Its value can be TIM6 or TIM7.
  *	@returns 0 if successful and -1 if otherwise.
  */
 int timer_disable_interrupt(TIM_TypeDef *tim)
@@ -110,7 +113,8 @@ int TIMER_enable(TIM_TypeDef *tim)
 }
 
 /** @brief Initializes a basic Timer
- *	@param tim The timer to be initialized. Its value can be TIM6 or TIM7
+ *	@param tim The timer to be initialized. Its value can be TIM6 or TIM7.
+ *	@returns 0 if successful and -1 if otherwise.
  *
  *	A basic timer is initialized for the puspose of being a triggering source
  *	for DAC.
@@ -160,6 +164,9 @@ int timer_init(TIM_TypeDef *tim, bool interrupt, void (*callback)(void))
 	return 0;
 }
 
+/** @name Timer Interrupt Service Routine. */
+/** @{*/
+
 /** @brief IRQ Handler for Timer 6
  */
 void TIM6_DAC_IRQHandler(void)
@@ -180,3 +187,4 @@ void TIM7_IRQHandler(void)
 		timer7_callback();
 }
 
+/** @}*/
