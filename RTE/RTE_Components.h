@@ -4,7 +4,7 @@
  *      *** Do not modify ! ***
  *
  * Project: 'Simple_Waveform_Generator' 
- * Target:  'Simple_Waveform_Generator' 
+ * Target:  'simple_waveform_generator' 
  */
 
 #ifndef RTE_COMPONENTS_H
