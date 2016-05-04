@@ -164,7 +164,7 @@ static void ConfigureDAC(uint32_t noofsample, uint32_t periodinns)
 	
 	//disable all peripheral to make changes
 	TIMER_disable(TIM6);
-	DMA_disable(DMA_CHN);
+	dma_disable(DMA_CHN);
 	DAC_disable(DAC_CHN);
 	
 
@@ -173,14 +173,8 @@ static void ConfigureDAC(uint32_t noofsample, uint32_t periodinns)
 	DAC_enable(DAC_CHN);
 	
 	/* Initialize DMA */
-	DMA_set_size(DMA_CHN,noofsample);
-	DMA_set_memory(DMA_CHN,DMAData);
-//	dmaConf.numWrite = noofsample;
-//	dmaConf.readMem = DMAData;
-//	dmaConf.writeMem = (uint32_t *)(&DAC->DHR12R1);
-
-	DMA_init(DMA_CHN);
-	DMA_enable(DMA_CHN);
+	dma_init(DMA_CHN,DMAData,noofsample);
+	dma_enable(DMA_CHN);
 
 	/* Initialize Timer */
 	
