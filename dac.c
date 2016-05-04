@@ -59,3 +59,37 @@ int dac_init(int chn)
 	
 	return 0;
 }
+
+/** @brief Disables the selected channel.
+ *	@param chn The channe to disable. This value is either 1 or 2.
+ *	@returns 0 if successful and -1 if otherwise.
+ */
+int DAC_disable(int chn)
+{
+	if ((chn != 1) && (chn != 2))
+		return -1;
+	
+	if (chn == 1)
+		DAC->CR &= ~(DAC_CR_EN1);
+	else
+		DAC->CR &= ~(DAC_CR_EN2);
+	
+	return 0;
+}
+
+/** @brief Enables the selected channel.
+ *	@param chn The channel to enable. The value is either 1 or 2.
+ *	@returns Returns 0 if successful and -1 if otherwise.
+ */
+int DAC_enable(int chn)
+{
+	if ((chn != 1) && (chn != 2))
+		return -1;
+	
+	if (chn == 1)
+		DAC->CR |= DAC_CR_EN1;
+	else
+		DAC->CR |= DAC_CR_EN2;
+	
+	return 0;
+}

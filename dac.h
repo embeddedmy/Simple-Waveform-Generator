@@ -12,4 +12,7 @@
  
  int dac_init(int chn);
  
+ int DAC_disable(int chn);
+ int DAC_enable(int chn);
+ 
  #endif	/* DAC_H */
