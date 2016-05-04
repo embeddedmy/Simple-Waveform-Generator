@@ -10,4 +10,9 @@
 
 #include "stm32f0xx.h"
 
+int dma_init(int chn, uint32_t *read_mem, uint32_t num_read);
+
+int dma_disable(int chn);
+int dma_enable(int chn);
+
 #endif	/* DMA_H */
