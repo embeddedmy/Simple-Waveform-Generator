@@ -163,14 +163,14 @@ static void configure_dac(uint32_t noofsample, uint32_t period_in_ns)
 	uint32_t timer_prescalar;
 	
 	//disable all peripheral to make changes
-	TIMER_disable(TIM6);
+	timer_disable(TIMER_IDX);
 	dma_disable(DMA_CHN);
-	DAC_disable(DAC_CHN);
+	dac_disable(DAC_CHN);
 	
 
 	/* Initialize DAC */
 	dac_init(DAC_CHN);
-	DAC_enable(DAC_CHN);
+	dac_enable(DAC_CHN);
 	
 	/* Initialize DMA */
 	dma_init(DMA_CHN,DMAData,noofsample);
@@ -193,10 +193,10 @@ static void configure_dac(uint32_t noofsample, uint32_t period_in_ns)
 		}
 	}
 	
-	timer_write_counter(TIM6, timer_count);
-	timer_write_prescaler(TIM6,timer_prescalar);
-	timer_init(TIM6, 0, 0);
-	TIMER_enable(TIM6);
+	timer_write_counter(TIMER_IDX, timer_count);
+	timer_write_prescaler(TIMER_IDX,timer_prescalar);
+	timer_init(TIMER_IDX, 0, 0);
+	timer_enable(TIMER_IDX);
 }
 
 /** @brief Draw waveform in DAC output port according to processed information
@@ -229,7 +229,7 @@ void generate_wave_form(enum WAVEFORM_TYPES waveform_types, uint32_t frequency, 
 	}
 	else
 	{
-		TIMER_disable(TIM6);
+		timer_disable(TIMER_IDX);
 	}
 }
 

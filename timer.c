@@ -13,116 +13,41 @@
 #include <stdio.h>
 #include "timer.h"
 
+static void timer_extract_base_pointer(enum timer_index idx,
+								TIM_TypeDef **tim);
+
 /** @name Callback function handlers */
 /** @{*/
+
 void (*timer6_callback)(void) = NULL;
 void (*timer7_callback)(void) = NULL;
+
 /** @}*/
 
-/** @brief Writes to the counter register
- *	@param tim The timer to configure. Its value can be TIM6 or TIM7.
- *	@param val The value of the counter.
- *	@returns 0 if successful and -1 if otherwise.
- *
- *	This function writes to the counter register which is the ARR register.
- *
- *	@note It is best to disable the timer before updating the counter.
- */
-int timer_write_counter(TIM_TypeDef *tim, uint16_t val)
+static void timer_extract_base_pointer(enum timer_index idx,
+								TIM_TypeDef **tim)
 {
-	if ((tim != TIM6) && (tim != TIM7))
-		return -1;
-
-	tim->ARR = val;
-	return 0;
-}
-
-/** @brief Writes to the prescaler register
- *	@param tim The timer to configure. Its value can be TIM6 or TIM7.
- *	@param val The value of the prescaler.
- *	@returns 0 if successful and -1 if otherwise.
- *
- *	@note It is best to disable the timer before updating the prescaler.
- */
-int timer_write_prescaler(TIM_TypeDef *tim, uint16_t val)
-{
-	if ((tim != TIM6) && (tim != TIM7))
-		return -1;
-
-	tim->PSC = val;
-	return 0;
-}
-
-/** @brief Enables Timer interrupt
- *	@tim The timer to configure. Its value can be TIM6 or TIM7.
- *	@returns 0 if successful and -1 if otherwise.
- *
- *	@note The timer needs to be configured to enable interrupt in timer_init in
- *	order for this to work.
- */
-int timer_enable_interrupt(TIM_TypeDef *tim)
-{
-	if ((tim != TIM6) && (tim != TIM7))
-	return -1;
-	
-	tim->SR	  &= ~(TIM_SR_UIF); /* Clear interrupt flag */
-	tim->DIER |= TIM_DIER_UIE;	/* Enable interrupt */
-	
-	return 0;
-}
-
-/** @brief Disables Timer interrupt
- *	@tim The timer to configure. Its value can be TIM6 or TIM7.
- *	@returns 0 if successful and -1 if otherwise.
- */
-int timer_disable_interrupt(TIM_TypeDef *tim)
-{
-	if ((tim != TIM6) && (tim != TIM7))
-	return -1;
-	
-	tim->SR	  &= ~(TIM_SR_UIF); 	/* Clear interrupt flag */
-	tim->DIER &= ~(TIM_DIER_UIE);	/* Disable interrupt */
-	
-	return 0;
-}
-
-/** @brief Disables timer counting
- *	@param tim Timer to be configured. Its value can be TIM6 or TIM7.
- *	@returns 0 if successful and -1 if otherwise.
- */
-int TIMER_disable(TIM_TypeDef *tim)
-{
-	if ((tim != TIM6) && (tim != TIM7))
-		return -1;
-
-	tim->CR1 &= ~(TIM_CR1_CEN);
-	return 0;
-}
-
-/** @brief Enables timer counting
- *	@param tim Timer to be configured. Its value can be TIM6 or TIM7.
- *	@returns 0 if successful and -1 if otherwise.
- */
-int TIMER_enable(TIM_TypeDef *tim)
-{
-	if ((tim != TIM6) && (tim != TIM7))
-		return -1;
-
-	tim->CR1 |= TIM_CR1_CEN;
-	return 0;
+	if (idx == TIMER_IDX_6)
+		*tim = TIM6;
+	else if (idx == TIMER_IDX_7)
+		*tim = TIM7;
 }
 
 /** @brief Initializes a basic Timer
- *	@param tim The timer to be initialized. Its value can be TIM6 or TIM7.
+ *	@param idx The timer to be initialized.
  *	@returns 0 if successful and -1 if otherwise.
  *
  *	A basic timer is initialized for the puspose of being a triggering source
  *	for DAC.
  */
-int timer_init(TIM_TypeDef *tim, bool interrupt, void (*callback)(void))
+int timer_init(enum timer_index idx, bool interrupt, void (*callback)(void))
 {
-	if ((tim != TIM6) & (tim != TIM7))
+	TIM_TypeDef *tim;
+	
+	if ((idx != TIMER_IDX_6) & (idx != TIMER_IDX_7))
 		return -1;
+	
+	timer_extract_base_pointer(idx, &tim);
 	
 	/* Enable clock */
 	if (tim == TIM6) {
@@ -161,6 +86,123 @@ int timer_init(TIM_TypeDef *tim, bool interrupt, void (*callback)(void))
 		}
 	}
 	
+	return 0;
+}
+
+/** @brief Writes to the counter register
+ *	@param idx The timer to configure.
+ *	@param val The value of the counter.
+ *	@returns 0 if successful and -1 if otherwise.
+ *
+ *	This function writes to the counter register which is the ARR register.
+ *
+ *	@note It is best to disable the timer before updating the counter.
+ */
+int timer_write_counter(enum timer_index idx, uint16_t val)
+{
+	TIM_TypeDef *tim;
+	
+	if ((idx != TIMER_IDX_6) & (idx != TIMER_IDX_7))
+		return -1;
+	
+	timer_extract_base_pointer(idx, &tim);
+
+	tim->ARR = val;
+	return 0;
+}
+
+/** @brief Writes to the prescaler register
+ *	@param idx The timer to configure.
+ *	@param val The value of the prescaler.
+ *	@returns 0 if successful and -1 if otherwise.
+ *
+ *	@note It is best to disable the timer before updating the prescaler.
+ */
+int timer_write_prescaler(enum timer_index idx, uint16_t val)
+{
+	TIM_TypeDef *tim;
+	
+	if ((idx != TIMER_IDX_6) & (idx != TIMER_IDX_7))
+		return -1;
+	
+	timer_extract_base_pointer(idx, &tim);
+
+	tim->PSC = val;
+	return 0;
+}
+
+/** @brief Enables Timer interrupt
+ *	@param idx The timer to configure.
+ *	@returns 0 if successful and -1 if otherwise.
+ *
+ *	@note The timer needs to be configured to enable interrupt in timer_init in
+ *	order for this to work.
+ */
+int timer_enable_interrupt(enum timer_index idx)
+{
+	TIM_TypeDef *tim;
+	
+	if ((idx != TIMER_IDX_6) & (idx != TIMER_IDX_7))
+		return -1;
+	
+	timer_extract_base_pointer(idx, &tim);
+	
+	tim->SR	  &= ~(TIM_SR_UIF); /* Clear interrupt flag */
+	tim->DIER |= TIM_DIER_UIE;	/* Enable interrupt */
+	
+	return 0;
+}
+
+/** @brief Disables Timer interrupt
+ *	@param idx The timer to configure.
+ *	@returns 0 if successful and -1 if otherwise.
+ */
+int timer_disable_interrupt(enum timer_index idx)
+{
+	TIM_TypeDef *tim;
+	
+	if ((idx != TIMER_IDX_6) & (idx != TIMER_IDX_7))
+		return -1;
+	
+	timer_extract_base_pointer(idx, &tim);
+	
+	tim->SR	  &= ~(TIM_SR_UIF); 	/* Clear interrupt flag */
+	tim->DIER &= ~(TIM_DIER_UIE);	/* Disable interrupt */
+	
+	return 0;
+}
+
+/** @brief Disables timer counting
+ *	@param idx Timer to be configured.
+ *	@returns 0 if successful and -1 if otherwise.
+ */
+int timer_disable(enum timer_index idx)
+{
+	TIM_TypeDef *tim;
+	
+	if ((idx != TIMER_IDX_6) & (idx != TIMER_IDX_7))
+		return -1;
+	
+	timer_extract_base_pointer(idx, &tim);
+
+	tim->CR1 &= ~(TIM_CR1_CEN);
+	return 0;
+}
+
+/** @brief Enables timer counting
+ *	@param idx Timer to be configured.
+ *	@returns 0 if successful and -1 if otherwise.
+ */
+int timer_enable(enum timer_index idx)
+{
+	TIM_TypeDef *tim;
+	
+	if ((idx != TIMER_IDX_6) & (idx != TIMER_IDX_7))
+		return -1;
+	
+	timer_extract_base_pointer(idx, &tim);
+
+	tim->CR1 |= TIM_CR1_CEN;
 	return 0;
 }
 
