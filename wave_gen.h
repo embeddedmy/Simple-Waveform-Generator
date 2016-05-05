@@ -23,12 +23,11 @@
 
 
 /*enum for the waveform types supported*/
-enum WAVEFORM_TYPES
-{
-	WAVEFORM_TYPE_SINE=0,
-	WAVEFORM_TYPE_SAWTOOTH,
-	WAVEFORM_TYPE_TRIANGULAR,
-	WAVEFORM_TYPE_SQUARE
+enum waveform {
+	SINE 	 = 0,
+	SAWTOOTH	 = 1,
+	TRIANGLE = 2,
+	SQUARE = 3
 };
 
 /*define for waveform data calculations*/
@@ -44,7 +43,7 @@ enum WAVEFORM_TYPES
 #define MAX_FREQUENCY (1000000000/(DAC_SAMPLE_WAIT_TIME_NS*MIN_SAMPLE_PER_CYCLE))
 #define MIN_FREQUENCY 1
 
-extern void getnerate_waveform(enum WAVEFORM_TYPES waveform_types, uint32_t frequency, float amplitude);
+extern void generate_waveform(enum waveform waveform, uint32_t frequency, float amplitude);
 extern uint32_t get_max_freq(void);
 extern uint32_t get_min_freq(void);
 extern float get_max_amplitude(void);
