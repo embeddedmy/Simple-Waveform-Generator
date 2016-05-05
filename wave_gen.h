@@ -1,4 +1,4 @@
-/** @file WaveGen.h
+/** @file wave_gen.h
  *  @brief WaveGen Control include file 
  *  @author Leong Keit
  *  @date April 2016
@@ -44,11 +44,10 @@ enum WAVEFORM_TYPES
 #define MAX_FREQUENCY (1000000000/(DAC_SAMPLE_WAIT_TIME_NS*MIN_SAMPLE_PER_CYCLE))
 #define MIN_FREQUENCY 1
 
-extern uint8_t IsParameterAllowed(enum WAVEFORM_TYPES waveform_types, uint32_t frequency, float amplitude);
-extern void GenerateWaveform(enum WAVEFORM_TYPES waveform_types, uint32_t frequency, float amplitude);
-extern uint32_t GetMaxFreq(void);
-extern uint32_t GetMinFreq(void);
-extern float GetMaxAmplitude(void);
-extern float GetMinAmplitude(void);
+extern void getnerate_waveform(enum WAVEFORM_TYPES waveform_types, uint32_t frequency, float amplitude);
+extern uint32_t get_max_freq(void);
+extern uint32_t get_min_freq(void);
+extern float get_max_amplitude(void);
+extern float get_min_amplitude(void);
 
 #endif	/* WAVE_GEN_H */

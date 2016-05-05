@@ -396,11 +396,6 @@
               <FilePath>.\Lib\apptree\Sources\apptree.c</FilePath>
             </File>
             <File>
-              <FileName>WaveGen.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\WaveGen.c</FilePath>
-            </File>
-            <File>
               <FileName>serial.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\serial.c</FilePath>
@@ -414,6 +409,11 @@
               <FileName>dma.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\dma.c</FilePath>
+            </File>
+            <File>
+              <FileName>wave_gen.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\wave_gen.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -441,11 +441,6 @@
               <FilePath>.\Lib\apptree\Includes\list.h</FilePath>
             </File>
             <File>
-              <FileName>WaveGen.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\WaveGen.h</FilePath>
-            </File>
-            <File>
               <FileName>serial.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\serial.h</FilePath>
@@ -454,6 +449,11 @@
               <FileName>dma.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\dma.h</FilePath>
+            </File>
+            <File>
+              <FileName>wave_gen.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\wave_gen.h</FilePath>
             </File>
           </Files>
         </Group>
