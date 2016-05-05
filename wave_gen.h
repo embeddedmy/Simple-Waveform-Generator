@@ -12,8 +12,9 @@
 #include "timer.h"
 
 /*define DAC channel and DMA channel to use DAC and DMA driver*/
-#define DAC_CHN			1
-#define DMA_CHN			3
+#define DAC_CHN				DAC_CHN_1
+#define DMA_CHN				DMA_CHN_3
+#define TIMER_IDX			TIMER_IDX_6
 
 /* DAC peripheral limitation defines*/ 
 #define TIMER_TICK_NS		21

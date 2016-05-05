@@ -29,9 +29,9 @@ struct serial_ringbuf {
 	volatile int tail;
 };
 
-static int rx_ringbuf_read(unsigned char *output);
-static int rx_ringbuf_write(unsigned char input);
-static int tx_ringbuf_read(unsigned char *output);
+static int rx_rbuf_read(unsigned char *output);
+static int rx_rbuf_write(unsigned char input);
+static int tx_rbuf_read(unsigned char *output);
 static int tx_rbuf_write(unsigned char input);
 
 static void serial_handle_rx_interrupt(void);
@@ -56,7 +56,7 @@ static struct serial_ringbuf tx_rbuf;
  *	@param output The container for holding the output read.
  *	@returns 0 if successful and -1 if there is nothing to read.
  */
-static int rx_ringbuf_read(unsigned char *output)
+static int rx_rbuf_read(unsigned char *output)
 {
 	if (rx_rbuf.head == rx_rbuf.tail)
 		return -1;
@@ -71,7 +71,7 @@ static int rx_ringbuf_read(unsigned char *output)
  *	@param input The char to be written to the buffer.
  *	@returns 0 if successful and -1 if the buffer is full.
  */
-static int rx_ringbuf_write(unsigned char input)
+static int rx_rbuf_write(unsigned char input)
 {
 	if ((rx_rbuf.tail + 1) % SERIAL_RBUF_SIZE == rx_rbuf.head)
 		return -1;
@@ -86,7 +86,7 @@ static int rx_ringbuf_write(unsigned char input)
  *	@returns 0 if successful and -1 if there is no character
  *	to be read.
  */
-static int tx_ringbuf_read(unsigned char *output)
+static int tx_rbuf_read(unsigned char *output)
 {
 	if (tx_rbuf.head == tx_rbuf.tail)
 		return -1;
@@ -177,7 +177,7 @@ int serial_putchar_nonblocking(unsigned char ch)
  */
 void serial_getchar_blocking(unsigned char *ch)
 {
-	while (rx_ringbuf_read(ch));
+	while (rx_rbuf_read(ch));
 }
 
 /** @brief Reads a char from the rx_ringbuf
@@ -190,14 +190,14 @@ void serial_getchar_blocking(unsigned char *ch)
  */
 int serial_getchar_nonblocking(unsigned char *ch)
 {
-	return (rx_ringbuf_read(ch));
+	return (rx_rbuf_read(ch));
 }
 
 /** @brief Function for handling rx interrupts
  */
 static void serial_handle_rx_interrupt(void)
 {
-	rx_ringbuf_write((unsigned char)(USART2->RDR & 0xFF));
+	rx_rbuf_write((unsigned char)(USART2->RDR & 0xFF));
 }
 
 /** @brief Function for handling tx interrupts
@@ -206,7 +206,7 @@ static void serial_handle_tx_interrupt(void)
 {
 	unsigned char output;
 	
-	if (!tx_ringbuf_read(&output)) {
+	if (!tx_rbuf_read(&output)) {
 		USART2->TDR = (output & 0xFF);
 	} else {
 		USART2->CR1 &= ~(USART_CR1_TXEIE);
