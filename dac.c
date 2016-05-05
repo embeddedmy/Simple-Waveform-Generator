@@ -8,7 +8,7 @@
 #include "dac.h"
 
 /**	@brief Initializes a DAC channel.
- *	@param chn Channel to initialize. The value is either 1 or 2.
+ *	@param chn Channel to initialize.
  *	@returns Returns 0 if successful and -1 if otherwise.
  *
  *	Initializes either channel 1 or 2 of the DAC. The channel is configured to
@@ -16,16 +16,16 @@
  *	channel is done with reference to Table 31 of the Reference Manual. Also,
  *	DMA is enabled.
  */
-int dac_init(int chn)
+int dac_init(enum dac_channel chn)
 {
 	/* Check if channel index is correct */
-	if ((chn != 1) && (chn != 2))
+	if ((chn != DAC_CHN_1) && (chn != DAC_CHN_2))
 		return -1;
 
 	/* Enable clock for DAC peripheral */
 	RCC->APB1ENR |= RCC_APB1ENR_DACEN;
 	
-	if (chn == 1) {
+	if (chn == DAC_CHN_1) {
 		/* Configure Timer 6 as trigger */
 		DAC->CR &= ~(DAC_CR_TSEL1);
 		DAC->CR |= DAC_CR_TEN1;
@@ -40,7 +40,7 @@ int dac_init(int chn)
 		/* Enable output buffer */
 		DAC->CR |= DAC_CR_BOFF1;
 		
-	} else if (chn == 2) {
+	} else if (chn == DAC_CHN_2) {
 		/* Configure Timer 7 as trigger */
 		DAC->CR &= ~(DAC_CR_TSEL2);
 		DAC->CR |= DAC_CR_TSEL2_1;
@@ -61,15 +61,15 @@ int dac_init(int chn)
 }
 
 /** @brief Disables the selected channel.
- *	@param chn The channe to disable. This value is either 1 or 2.
+ *	@param chn The channe to disable.
  *	@returns 0 if successful and -1 if otherwise.
  */
-int DAC_disable(int chn)
+int dac_disable(enum dac_channel chn)
 {
-	if ((chn != 1) && (chn != 2))
+	if ((chn != DAC_CHN_1) && (chn != DAC_CHN_2))
 		return -1;
 	
-	if (chn == 1)
+	if (chn == DAC_CHN_1)
 		DAC->CR &= ~(DAC_CR_EN1);
 	else
 		DAC->CR &= ~(DAC_CR_EN2);
@@ -78,15 +78,15 @@ int DAC_disable(int chn)
 }
 
 /** @brief Enables the selected channel.
- *	@param chn The channel to enable. The value is either 1 or 2.
+ *	@param chn The channel to enable.
  *	@returns Returns 0 if successful and -1 if otherwise.
  */
-int DAC_enable(int chn)
+int dac_enable(enum dac_channel chn)
 {
-	if ((chn != 1) && (chn != 2))
+	if ((chn != DAC_CHN_1) && (chn != DAC_CHN_2))
 		return -1;
 	
-	if (chn == 1)
+	if (chn == DAC_CHN_1)
 		DAC->CR |= DAC_CR_EN1;
 	else
 		DAC->CR |= DAC_CR_EN2;

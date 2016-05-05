@@ -5,14 +5,19 @@
  *  @date April 2016
  */
  
- #ifndef DAC_H
- #define DAC_H
- 
- #include "stm32f0xx.h"
- 
- int dac_init(int chn);
- 
- int DAC_disable(int chn);
- int DAC_enable(int chn);
- 
- #endif	/* DAC_H */
+#ifndef DAC_H
+#define DAC_H
+
+#include "stm32f0xx.h"
+
+enum dac_channel {
+	DAC_CHN_1 = 0,
+	DAC_CHN_2 = 1
+};
+
+int dac_init(enum dac_channel chn);
+
+int dac_disable(enum dac_channel chn);
+int dac_enable(enum dac_channel chn);
+
+#endif	/* DAC_H */

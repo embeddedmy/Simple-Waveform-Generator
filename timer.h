@@ -11,15 +11,21 @@
 #include <stdbool.h>
 #include "stm32f0xx.h"
 
-int timer_write_counter(TIM_TypeDef *tim, uint16_t val);
-int timer_write_prescaler(TIM_TypeDef *tim, uint16_t val);
+enum timer_index {
+	TIMER_IDX_6 = 0,
+	TIMER_IDX_7 = 1
+};
 
-int timer_disable_interrupt(TIM_TypeDef *tim);
-int timer_enable_interrupt(TIM_TypeDef *tim);
+int timer_init(enum timer_index idx, bool interrupt,
+			void (*callback)(void));
 
-int TIMER_disable(TIM_TypeDef *tim);
-int TIMER_enable(TIM_TypeDef *tim);
+int timer_write_counter(enum timer_index idx, uint16_t val);
+int timer_write_prescaler(enum timer_index idx, uint16_t val);
 
-int timer_init(TIM_TypeDef *tim, bool interrupt, void (*callback)(void));
+int timer_disable_interrupt(enum timer_index idx);
+int timer_enable_interrupt(enum timer_index idx);
+
+int timer_disable(enum timer_index idx);
+int timer_enable(enum timer_index idx);
 
 #endif	/* TIMER_H */
