@@ -10,9 +10,15 @@
 
 #include "stm32f0xx.h"
 
-int dma_init(int chn, uint32_t *read_mem, uint32_t num_read);
+/** Enumeration for DMA channels */
+enum dma_channel {
+	DMA_CHN_3 = 0,	/** Used with DAC channel 1 */
+	DMA_CHN_4 = 1	/** Used with DAC channel 2 */
+};
 
-int dma_disable(int chn);
-int dma_enable(int chn);
+int dma_init(enum dma_channel chn, uint32_t *read_mem, uint32_t num_read);
+
+int dma_disable(enum dma_channel chn);
+int dma_enable(enum dma_channel chn);
 
 #endif	/* DMA_H */

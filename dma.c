@@ -7,35 +7,34 @@
 
 #include "dma.h"
 
-static void dma_extract_base_pointer(int chn, DMA_Channel_TypeDef **dma);
+static void dma_extract_base_pointer(enum dma_channel chn,
+								DMA_Channel_TypeDef **dma);
 
 /** @brief Extracts the DMA channel base pointer.
- *	@param The channel of interest. The value can either be 3 (for DAC chn 6)
- *	or 4 (for DAC chn 7).
- *	@param dma The container to the Channel base pointer for holding the output
- *	of this operation.
+ *	@param The channel of interest.
+ *	@param dma Handle to DMA base pointer.
  *	@returns 0 if successful and -1 if otherwise.
  */
-static void dma_extract_base_pointer(int chn, DMA_Channel_TypeDef **dma)
+static void dma_extract_base_pointer(enum dma_channel chn,
+								DMA_Channel_TypeDef **dma)
 {
-	if (chn == 3)
+	if (chn == DMA_CHN_3)
 		*dma = DMA1_Channel3;
-	else if (chn == 4)
+	else if (chn == DMA_CHN_4)
 		*dma = DMA1_Channel4;
 }
 
 /** @brief Initializes the DMA for DAC use.
- *	@param chn The DMA channel to initialize. The value can either be
- *	3 (for DAC chn 6) or 4 (for DAC chn 7).
- *	@param read_mem Handle to memory location to be read for DMA transfer.
- *	@param num_read Size of read mem.
+ *	@param chn The DMA channel to initialize.
+ *	@param read_mem Handle to DMA read memory location.
+ *	@param num_read Size of read_mem.
  *	@returns 0 if successful and -1 if otherwise.
  */
-int dma_init(int chn, uint32_t *read_mem, uint32_t num_read)
+int dma_init(enum dma_channel chn, uint32_t *read_mem, uint32_t num_read)
 {
 	DMA_Channel_TypeDef *dma;
 	
-	if ((chn != 3) && (chn != 4))
+	if ((chn != DMA_CHN_3) && (chn != DMA_CHN_4))
 		return -1;
 	
 	dma_extract_base_pointer(chn, &dma);
@@ -46,18 +45,18 @@ int dma_init(int chn, uint32_t *read_mem, uint32_t num_read)
 	/* Assign DMA transfer read and write memory locations */
 	dma->CMAR = (uint32_t)(read_mem);
 	
-	if (chn == 3)
+	if (chn == DMA_CHN_3)
 		dma->CPAR = (uint32_t)(&DAC->DHR12R1);
 	else
 		dma->CPAR = (uint32_t)(&DAC->DHR12R2);
 	
 	dma->CNDTR = num_read;
 	
-	/* Enable increment mode,
-	   Set read memory size to 32 bits,
-	   Set write memory size to 32 bits,
-	   Enable circular mode
-	   Set to read from memory mode */
+	/* 1. Enable increment mode,
+	   2. Set read memory size to 32 bits,
+	   3. Set write memory size to 32 bits,
+	   4. Enable circular mode
+	   5. Set to read from memory mode */
 	dma->CCR |=DMA_CCR_MINC | DMA_CCR_MSIZE_1 | DMA_CCR_PSIZE_1
 				| DMA_CCR_CIRC | DMA_CCR_DIR;
 	
@@ -65,15 +64,14 @@ int dma_init(int chn, uint32_t *read_mem, uint32_t num_read)
 }
 
 /** @brief Disables a DMA channel.
- *	@param chn The DMA channel to disable. The value can either be
- *	3 (for DAC chn 6) or 4 (for DAC chn 7).
- *	@returns 0 if successfula and -1 if otherwise.
+ *	@param chn The DMA channel to disable.
+ *	@returns 0 if successful and -1 if otherwise.
  */
-int dma_disable(int chn)
+int dma_disable(enum dma_channel chn)
 {
 	DMA_Channel_TypeDef *dma;
 	
-	if ((chn != 3) && (chn != 4))
+	if ((chn != DMA_CHN_3) && (chn != DMA_CHN_4))
 		return -1;
 	
 	dma_extract_base_pointer(chn, &dma);
@@ -86,11 +84,11 @@ int dma_disable(int chn)
  *	@param chn The DMA channel to enable.
  *	@returns 0 if successful and -1 if otherwise.
  */
-int dma_enable(int chn)
+int dma_enable(enum dma_channel chn)
 {
 	DMA_Channel_TypeDef *dma;
 	
-	if ((chn != 3) && (chn != 4))
+	if ((chn != DMA_CHN_3) && (chn != DMA_CHN_4))
 		return -1;
 	
 	dma_extract_base_pointer(chn, &dma);
