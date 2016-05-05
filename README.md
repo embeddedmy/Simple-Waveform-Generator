@@ -1,18 +1,62 @@
-# SigGen
 
-# Simple Waveform Generator
+# Simple_Waveform_Generator
 
-# This is a waveform generator project that uses STM32F072RB nucleo development board.
+## Introduction
 
-# The waveform generator supports Sine, Sawtooth, Triangular, and Square wavee.
+This is a signal generator which can generate 4 different waveforms with
+configurable frequencies and amplitudes. Configurations are done through
+a serial interface using a serial communication software.
 
-# Current specification supports 1Hz to 2000Hz and amplitude of 1.0v to 3.3v.
+This project is developed for the STM32 NUCLEO-FO72RB using Keil.
 
-# The waveform selection is using the serial UART port in the nucleo development board.
+## System Specifications
 
-# The output channel for the waveform on Pin PA_4 according to the pinout diagram of STM32F072RB nucleo development board.
+1. Required hardware
+ * STM32 NUCLEO-F072RB
 
-# System Default:
+2. Output pin
+ * pin PA4
+ 
+3. Supported waveforms
+ * Sine
+ * Square
+ * Triangle
+ * Sawtooth
 
-	# The serial terminal menu is printed using 115200 baud rate.
-	# The Pin PA_4 will output 1kHz Sine Wave with 3.3V amplitude when the board startup.
+4. Frequency range
+ * Maximum frequency:	2kHz
+ * Minimum frequency:	1Hz
+
+5. Amplitude range
+ * Maximum amplitude:	3.3V
+ * Minimum amplitude:	1.0V
+ 
+## Usage
+
+1. Download the code [here](https://github.com/embeddedmy/SigGen.git).
+
+2. Open the Keil Project File.
+
+3. Compile and download the code onto the STM NUCLEO-FO72RB.
+
+4. Use Putty or any serial communication software to interact with the
+device. Set baud rate of the serial communication software to 115200.
+
+5. Output waveform is observable on pin PA4.
+
+## Source code
+
+Download from [github](https://github.com/embeddedmy/SigGen.git).
+
+## Submodules
+
+1. Apptree
+ * The apptree is a tree-based application display framework.
+ * Source code available [here](https://github.com/cmlaw1993/apptree.git)
+
+## Authors and Contributors
+
+1. Tan Leong Kit (leongkeit91@gmail.com)
+2. Tiong Joon Kiat Patrick (tiongpatrick86@gmail.com)
+3. Yew Chung Law (lawyewchung@gmail.com)
+2. Law Chiw Ming Dennis (cmlaw1993@gmail.com)
