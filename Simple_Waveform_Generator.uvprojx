@@ -322,7 +322,7 @@
             <wLevel>2</wLevel>
             <uThumb>0</uThumb>
             <uSurpInc>0</uSurpInc>
-            <uC99>0</uC99>
+            <uC99>1</uC99>
             <useXO>0</useXO>
             <v6Lang>1</v6Lang>
             <v6LangP>1</v6LangP>
@@ -332,7 +332,7 @@
               <MiscControls></MiscControls>
               <Define></Define>
               <Undefine></Undefine>
-              <IncludePath></IncludePath>
+              <IncludePath>.\Lib\apptree\Includes</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -391,9 +391,9 @@
               <FilePath>.\timer.c</FilePath>
             </File>
             <File>
-              <FileName>dma.c</FileName>
+              <FileName>apptree.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\dma.c</FilePath>
+              <FilePath>.\Lib\apptree\Sources\apptree.c</FilePath>
             </File>
             <File>
               <FileName>WaveGen.c</FileName>
@@ -416,9 +416,14 @@
               <FilePath>.\timer.h</FilePath>
             </File>
             <File>
-              <FileName>dma.h</FileName>
+              <FileName>apptree.h</FileName>
               <FileType>5</FileType>
-              <FilePath>.\dma.h</FilePath>
+              <FilePath>.\Lib\apptree\Includes\apptree.h</FilePath>
+            </File>
+            <File>
+              <FileName>list.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Lib\apptree\Includes\list.h</FilePath>
             </File>
             <File>
               <FileName>WaveGen.h</FileName>
