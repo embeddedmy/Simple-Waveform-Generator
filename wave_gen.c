@@ -1,4 +1,4 @@
-/** @file WaveGen.c
+/** @file wave_gen.c
  *  @brief Waveform Generation Control
  *
  *	@details The current logic uses DAC on Timer and DMA to generate different
@@ -9,20 +9,20 @@
  */
 
 #include <math.h>
-#include "WaveGen.h"
+#include "wave_gen.h"
 
 /*data structure to store waveform sampling data*/
 uint32_t DMAData[MAX_MEMORY_ALLOWED];
 
 /** @brief Process Waveform parameter and calculate the timing and number of sample
- *	@param waveform_types is the waveform types
+ *	@param waveform is the waveform types
  *	frequency is the waveform frequency in Hz
  *	amplitude is the floating point value of waveform amplitude in v 
  *	pTiming_ns is pointer to store output sampling timing in ns
  *	pNoofSample is pointer to store output sample number 
  *	@returns 1 if parameter acceptable and 0 if otherwise.
  */
-static uint8_t ProcessWaveformParam(enum WAVEFORM_TYPES waveform_types, uint32_t frequency, float amplitude, uint32_t* pTiming_ns, uint32_t* pNoofSample)
+static uint8_t process_waveform_param(enum waveform waveform, uint32_t frequency, float amplitude, uint32_t* pTiming_ns, uint32_t* pNoofSample)
 {
 	uint32_t period_in_ns;
 
@@ -33,11 +33,11 @@ static uint8_t ProcessWaveformParam(enum WAVEFORM_TYPES waveform_types, uint32_t
 		return 0;
 	}
 	
-	switch(waveform_types)
+	switch(waveform)
 	{
-		case WAVEFORM_TYPE_SINE:
-		case WAVEFORM_TYPE_SAWTOOTH :
-		case WAVEFORM_TYPE_TRIANGULAR:
+		case SINE:
+		case SAWTOOTH :
+		case TRIANGLE:
 			*pNoofSample = period_in_ns/DAC_SAMPLE_WAIT_TIME_NS;
 		
 			if(*pNoofSample<MIN_SAMPLE_PER_CYCLE)
@@ -62,9 +62,9 @@ static uint8_t ProcessWaveformParam(enum WAVEFORM_TYPES waveform_types, uint32_t
 				*pTiming_ns =  period_in_ns/(*pNoofSample);
 			}
 		break;
-		case WAVEFORM_TYPE_SQUARE:
+		case SQUARE:
 			*pNoofSample=2;
-			*pTiming_ns = period_in_ns/2;
+			*pTiming_ns =  period_in_ns/(*pNoofSample);
 		break;
 		default:
 			return 0;
@@ -75,92 +75,92 @@ static uint8_t ProcessWaveformParam(enum WAVEFORM_TYPES waveform_types, uint32_t
 
 /** @brief Generate SawTooth WaveForm Sampling Data
  *	@param NoOfSample is the number of sample for this waveform
- *	Amplitude_In_Resolution is amplitude of waveform in DAC resolution
+ *	amplitude_in_resolution is amplitude of waveform in DAC resolution
  */
-static void GenerateSawToothTable(uint32_t NoOfSample, uint32_t Amplitude_In_Resolution)
+static void generate_sawtooth_table(uint32_t NoOfSample, uint32_t amplitude_in_resolution)
 {
 	uint32_t i;
 	for(i=0;i<NoOfSample;i++)
 	{
-		DMAData[i]=(Amplitude_In_Resolution*i/NoOfSample);
+		DMAData[i]=(amplitude_in_resolution*i/NoOfSample);
 	}
 }
 
 /** @brief Generate Triangular WaveForm Sampling Data
  *	@param NoOfSample is the number of sample for this waveform
- *	Amplitude_In_Resolution is amplitude of waveform in DAC resolution
+ *	amplitude_in_resolution is amplitude of waveform in DAC resolution
  */
-static void GenerateTriangularTable(uint32_t NoOfSample, uint32_t Amplitude_In_Resolution)
+static void generate_triangular_table(uint32_t NoOfSample, uint32_t amplitude_in_resolution)
 {
 	uint32_t i;
 
 	for(i=0;i<NoOfSample/2;i++)
 	{
-		DMAData[i]=2*(Amplitude_In_Resolution*i/NoOfSample);
+		DMAData[i]=2*(amplitude_in_resolution*i/NoOfSample);
 	}
 
 	for(i=0;i<NoOfSample/2;i++)
 	{
-		DMAData[i+NoOfSample/2]=Amplitude_In_Resolution-(2*(Amplitude_In_Resolution*i/NoOfSample));
+		DMAData[i+NoOfSample/2]=amplitude_in_resolution-(2*(amplitude_in_resolution*i/NoOfSample));
 	}
 }
 
 /** @brief Generate Sine WaveForm Sampling Data
  *	@param NoOfSample is the number of sample for this waveform
- *	Amplitude_In_Resolution is amplitude of waveform in DAC resolution
+ *	amplitude_in_resolution is amplitude of waveform in DAC resolution
  */
-static void GenerateSineTable(uint32_t NoOfSample, uint32_t Amplitude_In_Resolution)
+static void generate_sine_table(uint32_t NoOfSample, uint32_t amplitude_in_resolution)
 {
 	uint32_t i;
 	
 	for(i=0;i<NoOfSample;i++)
 	{
-		DMAData[i]=(sin(i*2*PI_VALUE/NoOfSample)+1)*(Amplitude_In_Resolution+1)/2;
+		DMAData[i]=(sin(i*2*PI_VALUE/NoOfSample)+1)*(amplitude_in_resolution+1)/2;
 	}
 }
 
 /** @brief Generate Square WaveForm Sampling Data
  *	@param NoOfSample is the number of sample for this waveform
- *	Amplitude_In_Resolution is amplitude of waveform in DAC resolution
+ *	amplitude_in_resolution is amplitude of waveform in DAC resolution
  */
-static void GenerateSquareTable(uint32_t Amplitude_In_Resolution)
+static void generate_square_table(uint32_t amplitude_in_resolution)
 {
 	DMAData[0]=0;
-	DMAData[1]=Amplitude_In_Resolution;
+	DMAData[1]=amplitude_in_resolution;
 }
 
 /** @brief Generate WaveForm Sampling Data according to types
- *	@param  waveform_types indicates the types of waveform
+ *	@param  waveform indicates the types of waveform
  *	NoOfSample is the number of sample for this waveform
- *	Amplitude_In_Resolution is amplitude of waveform in DAC resolution
+ *	amplitude_in_resolution is amplitude of waveform in DAC resolution
  */
-static void GenerateWaveFormTable(enum WAVEFORM_TYPES waveform_types, uint32_t NoOfSample, uint32_t Amplitude_In_Resolution)
+static void generate_waveform_table(enum waveform waveform, uint32_t NoOfSample, uint32_t amplitude_in_resolution)
 {
-	switch (waveform_types)
+	switch (waveform)
 	{
-		case WAVEFORM_TYPE_SINE:
-			GenerateSineTable(NoOfSample,Amplitude_In_Resolution);
+		case SINE:
+			generate_sine_table(NoOfSample,amplitude_in_resolution);
 		break;
-		case WAVEFORM_TYPE_SAWTOOTH:
-			GenerateSawToothTable(NoOfSample,Amplitude_In_Resolution);
+		case SAWTOOTH:
+			generate_sawtooth_table(NoOfSample,amplitude_in_resolution);
 		break;
-		case WAVEFORM_TYPE_TRIANGULAR:
-			GenerateTriangularTable(NoOfSample,Amplitude_In_Resolution);
+		case TRIANGLE:
+			generate_triangular_table(NoOfSample,amplitude_in_resolution);
 		break;
-		case WAVEFORM_TYPE_SQUARE:
-			GenerateSquareTable(Amplitude_In_Resolution);
+		case SQUARE:
+			generate_square_table(amplitude_in_resolution);
 		break;
 	}
 }
 
 /** @brief configure the DAC, DMA and timer to trigger waveform generation
  *	@param  noofsample is the number of sample for this waveform
- *	periodinns is timing in to grab a sample to output in DAC in nano seconds
+ *	period_in_ns is timing in to grab a sample to output in DAC in nano seconds
  */
-static void ConfigureDAC(uint32_t noofsample, uint32_t periodinns)
+static void configure_dac(uint32_t noofsample, uint32_t period_in_ns)
 {
-	uint32_t timercount;
-	uint32_t timerprescalar;
+	uint32_t timer_count;
+	uint32_t timer_prescalar;
 	
 	//disable all peripheral to make changes
 	TIMER_disable(TIM6);
@@ -178,54 +178,54 @@ static void ConfigureDAC(uint32_t noofsample, uint32_t periodinns)
 
 	/* Initialize Timer */
 	
-	timerprescalar=1;
+	timer_prescalar=1;
 	//prescalar and count calculation
 	while(1)
 	{
-		timercount=periodinns/(TIMER_TICK_NS*(timerprescalar+1));
-		if(timercount>65535)
+		timer_count=period_in_ns/(TIMER_TICK_NS*(timer_prescalar+1));
+		if(timer_count>65535)
 		{
-			timerprescalar=timerprescalar*2;
+			timer_prescalar=timer_prescalar*2;
 		}
 		else
 		{
 			break;
 		}
 	}
-	
-	timer_write_counter(TIM6, timercount);
-	timer_write_prescaler(TIM6,timerprescalar);
 	timer_init(TIM6, 0, 0);
+	timer_write_counter(TIM6, timer_count);
+	timer_write_prescaler(TIM6,timer_prescalar);
+
 	TIMER_enable(TIM6);
 }
 
 /** @brief Draw waveform in DAC output port according to processed information
- *	@param  waveform_types indicates the types of waveform
- *	Amplitude_In_Resolution is amplitude of waveform in DAC resolution
+ *	@param  waveform indicates the types of waveform
+ *	amplitude_in_resolution is amplitude of waveform in DAC resolution
  *	timing_ns is timing in to grab a sample to output in DAC in nano seconds
  *	noOfSample is the number of sample for this waveform
  */
-static void DrawWaveform(enum WAVEFORM_TYPES waveform_types, uint32_t amplitude_in_resolution, uint32_t timing_ns,	uint32_t noOfSample)
+static void draw_waveform(enum waveform waveform, uint32_t amplitude_in_resolution, uint32_t timing_ns,	uint32_t noOfSample)
 {
-	GenerateWaveFormTable(waveform_types,noOfSample,amplitude_in_resolution);
-	ConfigureDAC(noOfSample, timing_ns);
+	generate_waveform_table(waveform,noOfSample,amplitude_in_resolution);
+	configure_dac(noOfSample, timing_ns);
 }
 
 /** @brief Draw waveform in DAC output port according to waveform parameter
- *	@param  waveform_types indicates the types of waveform
+ *	@param  waveform indicates the types of waveform
  *	frequency is the waveform frequency in Hz
  *	amplitude is the floating point value of waveform amplitude in v 
  */
-void GenerateWaveform(enum WAVEFORM_TYPES waveform_types, uint32_t frequency, float amplitude)
+void generate_waveform(enum waveform waveform, uint32_t frequency, float amplitude)
 {
 	uint32_t timing_ns;
 	uint32_t noOfSample;
 	uint32_t amplitude_in_resolution;
 	
-	if(ProcessWaveformParam(waveform_types, frequency, amplitude, &timing_ns, &noOfSample))
+	if(process_waveform_param(waveform, frequency, amplitude, &timing_ns, &noOfSample))
 	{
 		amplitude_in_resolution = amplitude*DAC_RESOLUTION/DAC_VREF;
-		DrawWaveform(waveform_types,amplitude_in_resolution,timing_ns,noOfSample);
+		draw_waveform(waveform,amplitude_in_resolution,timing_ns,noOfSample);
 	}
 	else
 	{
@@ -236,7 +236,7 @@ void GenerateWaveform(enum WAVEFORM_TYPES waveform_types, uint32_t frequency, fl
 /** @brief Retrieve the maximum waveform frequncy that the system supports
  *	@returns value for maximum frequency in Hz that the system supports.
 */
-uint32_t GetMaxFreq(void)
+uint32_t get_max_freq(void)
 {
 		return MAX_FREQUENCY;
 }
@@ -245,21 +245,21 @@ uint32_t GetMaxFreq(void)
  *	@returns value for minimum amplitude in V that the system supports.
 */
 
-uint32_t GetMinFreq(void)
+uint32_t get_min_freq(void)
 {
 		return MIN_FREQUENCY;
 }
 /** @brief Retrieve the maximum waveform amplitude that the system supports
  *	@returns value for maximum amplitude in V that the system supports.
 */
-float GetMaxAmplitude(void)
+float get_max_amplitude(void)
 {
 		return MAX_AMPLITUDE_FLOAT;
 }
 /** @brief Retrieve the minimum waveform amplitude that the system supports
  *	@returns value for minimum amplitude in V that the system supports.
 */
-float GetMinAmplitude(void)
+float get_min_amplitude(void)
 {
 		return MIN_AMPLITUDE_FLOAT;
 }
